@@ -2,12 +2,12 @@ name: Build and Deploy to Cloud Run
 
 on:
   push:
-    branches: [Django-GCR]
+    branches: [GCR]
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   RUN_REGION: us-central1
-  SERVICE_NAME: airbnb-laiba
+  SERVICE_NAME: airbnb-laiba-service
   DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
   NAME: ${{ secrets.NAME }}
   USER: ${{ secrets.USER }}
