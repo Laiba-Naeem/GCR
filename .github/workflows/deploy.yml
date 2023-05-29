@@ -2,7 +2,7 @@ name: Build and Deploy to Cloud Run
 
 on:
   push:
-    branches: [GCR]
+    branches: [Django-GCR]
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
@@ -51,12 +51,12 @@ jobs:
         with:
           context: .
           push: true
-          tags: gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba
+          tags: gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba-service
         # Deleting previous images
       - name: Delete previous images
         run: |
-          gcloud container images list --repository=gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba --format='get(digest)' | xargs -I {} gcloud container images delete gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba@{} --quiet
+          gcloud container images list --repository=gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba-service --format='get(digest)' | xargs -I {} gcloud container images delete gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba-service@{} --quiet
 
       # Deploy image to Cloud Run
       - name: Deploy
-        run: gcloud run deploy airbnb-laiba --image gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba --platform managed --project=${{ secrets.PROJECT_ID }} --allow-unauthenticated --region us-central1
+        run: gcloud run deploy airbnb-laiba-service --image gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba-service --platform managed --project=${{ secrets.PROJECT_ID }} --allow-unauthenticated --region us-central1
