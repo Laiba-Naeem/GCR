@@ -149,7 +149,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ["https://airbnb-laiba-2drk4lqwsa-uc.a.run.app"]
+CSRF_TRUSTED_ORIGINS = ["https://airbnb-laiba-service-2drk4lqwsa-uc.a.run.app"]
 
 DATABASES = {
     'default': {
@@ -157,8 +157,8 @@ DATABASES = {
         'HOST': os.getenv('HOST', None),
         'USER': os.getenv('USER', None),
         'PASSWORD': os.getenv('PASSWORD', None),
-        'NAME': os.getenv('NAME', None)
-        # 'PORT': os.getenv('PORT', None)
+        'NAME': os.getenv('NAME', None),
+        'PORT': os.getenv('PORT', None)
     }
 }
 
