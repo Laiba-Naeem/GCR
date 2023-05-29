@@ -2,7 +2,7 @@ name: Build and Deploy to Cloud Run
 
 on:
   push:
-    branches: [Django-GCR]
+    branches: [GCR]
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
