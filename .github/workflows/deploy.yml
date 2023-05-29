@@ -2,7 +2,7 @@ name: Build and Deploy to Cloud Run
 
 on:
   push:
-    branches: [GCR]
+    branches: [GCR-TASK]
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
