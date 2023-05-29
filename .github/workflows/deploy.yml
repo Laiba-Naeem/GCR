@@ -1,0 +1,62 @@
+name: Build and Deploy to Cloud Run
+
+on:
+  push:
+    branches: [Django-GCR]
+
+env:
+  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  RUN_REGION: us-central1
+  SERVICE_NAME: airbnb-laiba
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+  NAME: ${{ secrets.NAME }}
+  USER: ${{ secrets.USER }}
+  PASSWORD: ${{ secrets.PASSWORD }}
+  INSTANCE_NAME: ${{ secrets.INSTANCE_NAME }}
+  SOCKET_NAME: ${{ secrets.SOCKET_NAME}}
+
+jobs:
+  setup-build-deploy:
+    name: Setup, Build, and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Creating Runtime .env and add service-account-key
+        run: |
+          touch .env
+          echo  NAME="${{ secrets.NAME }}" >> .env
+          echo  USER="${{ secrets.USER }}" >> .env
+          echo  PASSWORD="${{ secrets.PASSWORD }}" >> .env
+          echo  HOST="${{ secrets.HOST }}" >> .env
+          echo  SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+
+      - name: Setup python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: Connect to gcloud
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT }}
+          project_id: ${{ secrets.PROJECT_ID }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba
+        # Deleting previous images
+      - name: Delete previous images
+        run: |
+          gcloud container images list --repository=gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba --format='get(digest)' | xargs -I {} gcloud container images delete gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba@{} --quiet
+
+      # Deploy image to Cloud Run
+      - name: Deploy
+        run: gcloud run deploy airbnb-laiba --image gcr.io/${{ secrets.PROJECT_ID }}/airbnb-laiba --platform managed --project=${{ secrets.PROJECT_ID }} --allow-unauthenticated --region us-central1
